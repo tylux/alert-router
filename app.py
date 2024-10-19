@@ -1,9 +1,16 @@
-import yaml, os
+import yaml, os, logging
 import requests
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
 app = Flask(__name__)
+
+# Configure the logging system
+logging.basicConfig(
+    level=logging.os.getenv("LOG_LEVEL"),
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 # Load the YAML configuration
 def load_yaml_config(file_path):
@@ -26,22 +33,22 @@ def send_to_slack(bot_token, slack_channel, message):
     response = requests.post(slack_url, headers=headers, json=payload)
     
     if response.status_code != 200 or not response.json().get('ok', False):
-        print(f"Error sending message to Slack: {response.text}")
+        logging.info(f"Error sending message to Slack: {response.text}")
     return response.status_code == 200
 
 # Function to match text and find the correct Slack channel
 # Fallback to #sre-alerts if no match is found
 def determine_slack_channel(monitor_message, config):
     for team in config.get('teams', []):
-        print(f"Processing Team {team} config")
+        logging.info(f"Processing Team {team} config")
         for keyword in team.get('keywords', []):
-            print(f"The keyword is {keyword.lower()} The Message is: {monitor_message.lower()}") 
+            logging.debug(f"The keyword is {keyword.lower()} The Message is: {monitor_message.lower()}") 
             if keyword.lower() in monitor_message.lower():  # Basic substring match
-                print(f"Routed alert to team {team}")
+                logging.info(f"Match found: `{keyword}  --  Routing alert to team {team}")
                 return team.get('slack')
     
     # Fallback to SRE team if no keyword matches
-    print("No matches found so falling back to fallback channel")
+    logging.info("No matches found so falling back to fallback channel")
     return config.get('fallback_channel')
 
 # Route to handle incoming Datadog monitor webhooks

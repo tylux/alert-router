@@ -13,13 +13,12 @@ pip install -r requirements.txt
 
 Startup
 ```
-gunicorn -b 0.0.0.0:8000 main:app
+gunicorn -b 0.0.0.0:8000 app:app
 ```
 
 TODO
 
 * docstrings
-* log levels
 * test with real datadog payload
     * Parse things like tags, team etc that might come with this
 * Secure endpoint
