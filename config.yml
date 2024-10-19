@@ -1,0 +1,20 @@
+---
+teams:
+  - name: "Database Team"
+    slack: datadog-alerts
+    keywords:
+      - "postgres"
+      - "Database"
+      - "Error: Failed to connect to DB"
+    tags:
+      - datadog-tag
+      - datadog-team
+
+  - name: "DevOps Team"
+    slack: datadog-alerts
+    keywords:
+      - "database"
+      - "Error: High CPU Usage"
+      - "Error: Service Unavailable"
+      - "Error: Kubernetes Pod Crash"
+fallback_channel: sre-fallback
